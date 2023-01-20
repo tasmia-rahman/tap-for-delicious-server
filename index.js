@@ -16,7 +16,6 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         const servicesCollection = client.db('TapForDeliciousDB').collection('services');
-        const sellersCollection = client.db('TapForDeliciousDB').collection('sellers');
         const usersCollection = client.db('TapForDeliciousDB').collection('users');
         const blogsCollection = client.db('TapForDeliciousDB').collection('blogs');
 
