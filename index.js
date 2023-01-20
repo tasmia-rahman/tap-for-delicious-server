@@ -54,6 +54,13 @@ async function run() {
             const blogs = await blogsCollection.find(query).toArray();
             res.send(blogs);
         })
+
+        app.post('/blogs', async (req, res) => {
+            const blog = req.body;
+            blog.date = Date();
+            const result = await blogsCollection.insertOne(blog);
+            res.send(result);
+        });
     }
     finally {
 
