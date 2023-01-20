@@ -33,14 +33,6 @@ async function run() {
             res.send(service);
         })
 
-        // Sellers
-        app.post('/sellers', async (req, res) => {
-            const seller = req.body;
-            seller.joinDate = Date();
-            const result = await sellersCollection.insertOne(seller);
-            res.send(result);
-        });
-
         // Users
         app.post('/users', async (req, res) => {
             const user = req.body;
