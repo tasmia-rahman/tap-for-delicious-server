@@ -24,7 +24,6 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         const servicesCollection = client.db('TapForDeliciousDB').collection('services');
-        const sellersCollection = client.db('TapForDeliciousDB').collection('sellers');
         const usersCollection = client.db('TapForDeliciousDB').collection('users');
         const blogsCollection = client.db('TapForDeliciousDB').collection('blogs');
 
@@ -41,18 +40,11 @@ async function run() {
             res.send(service);
         })
 
-        // Sellers
-        app.post('/sellers', async (req, res) => {
-            const seller = req.body;
-            seller.joinDate = Date();
-            const result = await sellersCollection.insertOne(seller);
-            res.send(result);
-        });
-
         // Users
         app.post('/users', async (req, res) => {
             const user = req.body;
-            const result = usersCollection.insertOne(user);
+            user.joinDate = Date();
+            const result = await usersCollection.insertOne(user);
             res.send(result);
         })
 
@@ -62,6 +54,13 @@ async function run() {
             const blogs = await blogsCollection.find(query).toArray();
             res.send(blogs);
         })
+
+        app.post('/blogs', async (req, res) => {
+            const blog = req.body;
+            blog.date = Date();
+            const result = await blogsCollection.insertOne(blog);
+            res.send(result);
+        });
     }
     finally {
 
