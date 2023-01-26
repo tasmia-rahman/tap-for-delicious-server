@@ -51,9 +51,23 @@ async function run() {
         app.post('/users', async (req, res) => {
             const user = req.body;
             user.joinDate = Date();
+            const query = {
+                email: user.email
+            }
+            const alreadyUser = await usersCollection.find(query).toArray();
+            if (alreadyUser.length) {
+                const message = 'User already exists'
+                return res.send({ acknowledged: false, message: message })
+            }
             const result = await usersCollection.insertOne(user);
             res.send(result);
         });
+
+        app.get('/users', async (req, res) => {
+            const query = {};
+            const users = await usersCollection.find(query).toArray();
+            res.send(users);
+        })
 
 
         // Blogs
