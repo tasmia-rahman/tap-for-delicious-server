@@ -32,7 +32,14 @@ async function run() {
             const query = {};
             const options = await servicesCollection.find(query).toArray();
             res.send(options);
+        });
+        app.get('/services-limit', async (req, res)=>{
+            const query={};
+            const cursor = servicesCollection.find(query);
+            const topRestaurant = await cursor.limit(6).toArray();
+            res.send(topRestaurant);
         })
+
         app.get('/services/:id', async(req, res) =>{
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -46,7 +53,8 @@ async function run() {
             user.joinDate = Date();
             const result = await usersCollection.insertOne(user);
             res.send(result);
-        })
+        });
+        
 
         // Blogs
         app.get('/blogs', async (req, res) => {
