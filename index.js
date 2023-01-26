@@ -1,22 +1,29 @@
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config()
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
+
+require('dotenv').config();
+
 const app = express();
+
+
 const port = process.env.PORT || 5000;
+
+
+
 
 // middle wares
 app.use(cors());
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.mpeq17q.mongodb.net/?retryWrites=true&w=majority`;
+
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 async function run() {
     try {
         const servicesCollection = client.db('TapForDeliciousDB').collection('services');
-        const sellersCollection = client.db('TapForDeliciousDB').collection('sellers');
         const usersCollection = client.db('TapForDeliciousDB').collection('users');
         const blogsCollection = client.db('TapForDeliciousDB').collection('blogs');
 
@@ -25,7 +32,14 @@ async function run() {
             const query = {};
             const options = await servicesCollection.find(query).toArray();
             res.send(options);
+        });
+        app.get('/services-limit', async (req, res) => {
+            const query = {};
+            const cursor = servicesCollection.find(query);
+            const topRestaurant = await cursor.limit(6).toArray();
+            res.send(topRestaurant);
         })
+
         app.get('/services/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -33,20 +47,14 @@ async function run() {
             res.send(service);
         })
 
-        // Sellers
-        app.post('/sellers', async (req, res) => {
-            const seller = req.body;
-            seller.joinDate = Date();
-            const result = await sellersCollection.insertOne(seller);
-            res.send(result);
-        });
-
         // Users
         app.post('/users', async (req, res) => {
             const user = req.body;
+            user.joinDate = Date();
             const result = await usersCollection.insertOne(user);
             res.send(result);
-        })
+        });
+
 
         // Blogs
         app.get('/blogs', async (req, res) => {
