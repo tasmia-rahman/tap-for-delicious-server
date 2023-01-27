@@ -35,13 +35,14 @@ async function run() {
             const options = await servicesCollection.find(query).toArray();
             res.send(options);
         });
-        app.get('/foodservices', async (req, res) => {
-           
-            const options = await servicesCollection.find({ item : { $elemMatch : { name : "Brown Pie"} } }
-            ).toArray();
-            console.log(options);
-            res.send(options);
-        });
+        ////this part is talim own. so don't touch it.
+        // app.get('/topfood/id', async (req, res) => {
+        //    const query={ item : { $elemMatch : { name : "Brown Pie"} } }
+        //     const options = await servicesCollection.find(
+        //     ).toArray();
+        //     console.log(options);
+        //     res.send(options);
+        // });
         app.get('/services-limit', async (req, res) => {
             const query = {};
             const cursor = servicesCollection.find(query);
