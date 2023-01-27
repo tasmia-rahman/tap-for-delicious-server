@@ -26,6 +26,7 @@ async function run() {
         const servicesCollection = client.db('TapForDeliciousDB').collection('services');
         const usersCollection = client.db('TapForDeliciousDB').collection('users');
         const blogsCollection = client.db('TapForDeliciousDB').collection('blogs');
+        const ordersCollection = client.db('TapForDeliciousDB').collection('orders');
 
         // Restaurants
         app.get('/services', async (req, res) => {
@@ -81,6 +82,14 @@ async function run() {
             const blog = req.body;
             blog.date = Date();
             const result = await blogsCollection.insertOne(blog);
+            res.send(result);
+        });
+
+        // Orders
+        app.post('/orders', async (req, res) => {
+            const order = req.body;
+            order.date = Date();
+            const result = await ordersCollection.insertOne(order);
             res.send(result);
         });
     }
