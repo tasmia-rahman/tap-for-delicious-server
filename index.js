@@ -29,18 +29,10 @@ async function run() {
         const reviewCollection = client.db('TapForDeliciousDB').collection('reviews');
         const ordersCollection = client.db('TapForDeliciousDB').collection('orders');
 
-        // Top Food
-        ////this part is talim own. so don't touch it.
-        // app.get('/topfood/id', async (req, res) => {
-        //    const query={ item : { $elemMatch : { name : "Brown Pie"} } }
-        //     const options = await servicesCollection.find(
-        //     ).toArray();
-        //     console.log(options);
-        //     res.send(options);
-        // });
+        // Top Food part
 
-
-        // Restaurants
+        // Top Food part
+        
         app.get('/services', async (req, res) => {
             const query = {};
             const options = await servicesCollection.find(query).toArray();
