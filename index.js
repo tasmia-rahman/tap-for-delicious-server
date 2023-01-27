@@ -29,12 +29,7 @@ async function run() {
         const reviewCollection = client.db('TapForDeliciousDB').collection('reviews');
         const ordersCollection = client.db('TapForDeliciousDB').collection('orders');
 
-        // Restaurants
-        app.get('/services', async (req, res) => {
-            const query = {};
-            const options = await servicesCollection.find(query).toArray();
-            res.send(options);
-        });
+        // Top Food
         ////this part is talim own. so don't touch it.
         // app.get('/topfood/id', async (req, res) => {
         //    const query={ item : { $elemMatch : { name : "Brown Pie"} } }
@@ -43,6 +38,15 @@ async function run() {
         //     console.log(options);
         //     res.send(options);
         // });
+
+
+        // Restaurants
+        app.get('/services', async (req, res) => {
+            const query = {};
+            const options = await servicesCollection.find(query).toArray();
+            res.send(options);
+        });
+
         app.get('/services-limit', async (req, res) => {
             const query = {};
             const cursor = servicesCollection.find(query);
@@ -56,17 +60,17 @@ async function run() {
             const service = await servicesCollection.findOne(query);
             res.send(service);
         });
-        
+
         //review
-        app.get('/reviews', async(req, res)=>{
+        app.get('/reviews', async (req, res) => {
             const query = {};
             const cursor = reviewCollection.find(query);
-            const reviews = await cursor.toArray().sort({_id: -1});
+            const reviews = await cursor.toArray().sort({ _id: -1 });
             res.send(reviews);
 
         });
 
-        app.post('/reviews',async(req, res) =>{
+        app.post('/reviews', async (req, res) => {
             const review = req.body;
             console.log(review)
             const result = await reviewCollection.insertOne(review);
