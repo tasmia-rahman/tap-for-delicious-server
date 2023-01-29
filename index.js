@@ -108,6 +108,12 @@ async function run() {
         });
 
         // Orders
+        app.get('/orders', async (req, res) => {
+            const query = {};
+            const orders = await ordersCollection.find(query).toArray();
+            res.send(orders);
+        })
+
         app.post('/orders', async (req, res) => {
             const order = req.body;
             order.date = Date();
