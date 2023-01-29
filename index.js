@@ -55,17 +55,17 @@ async function run() {
             const service = await servicesCollection.findOne(query);
             res.send(service);
         });
-        
+
         //review
-        app.get('/reviews', async(req, res)=>{
+        app.get('/reviews', async (req, res) => {
             const query = {};
             const cursor = reviewCollection.find(query);
-            const reviews = await cursor.toArray().sort({_id: -1});
+            const reviews = await cursor.toArray().sort({ _id: -1 });
             res.send(reviews);
 
         });
 
-        app.post('/reviews',async(req, res) =>{
+        app.post('/reviews', async (req, res) => {
             const review = req.body;
             console.log(review)
             const result = await reviewCollection.insertOne(review);
@@ -111,6 +111,12 @@ async function run() {
         });
 
         // Orders
+        app.get('/orders', async (req, res) => {
+            const query = {};
+            const orders = await ordersCollection.find(query).toArray();
+            res.send(orders);
+        })
+
         app.post('/orders', async (req, res) => {
             const order = req.body;
             order.date = Date();
