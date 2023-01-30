@@ -92,7 +92,6 @@ async function run() {
             res.send(users);
         })
 
-
         // Blogs
         app.get('/blogs', async (req, res) => {
             const query = {};
