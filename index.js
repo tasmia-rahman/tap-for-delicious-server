@@ -28,6 +28,7 @@ async function run() {
         const blogsCollection = client.db('TapForDeliciousDB').collection('blogs');
         const reviewCollection = client.db('TapForDeliciousDB').collection('reviews');
         const ordersCollection = client.db('TapForDeliciousDB').collection('orders');
+        const restaurantsCollection = client.db('TapForDeliciousDB').collection('restaurants');
 
         // Restaurants
         app.get('/services', async (req, res) => {
@@ -36,8 +37,8 @@ async function run() {
             res.send(options);
         });
         app.get('/foodservices', async (req, res) => {
-           
-            const options = await servicesCollection.find({ item : { $elemMatch : { name : "Brown Pie"} } }
+
+            const options = await servicesCollection.find({ item: { $elemMatch: { name: "Brown Pie" } } }
             ).toArray();
             console.log(options);
             res.send(options);
@@ -55,6 +56,19 @@ async function run() {
             const service = await servicesCollection.findOne(query);
             res.send(service);
         });
+
+
+
+        // ------------ Restaurants -------------- //
+        app.get('/restaurants', async (req, res) => {
+            const query = {};
+            const result = await restaurantsCollection.find(query).toArray();
+            res.send(result);
+        })
+
+
+
+
 
         //review
         app.get('/reviews', async (req, res) => {
@@ -90,7 +104,7 @@ async function run() {
         });
 
         app.get('/users', async (req, res) => {
-            const query = {};
+            const query = { role: "buyer" };
             const users = await usersCollection.find(query).toArray();
             res.send(users);
         })
