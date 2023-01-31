@@ -13,7 +13,7 @@ const port = process.env.PORT || 5000;
 
 
 
-// middle wares
+// middle wares  
 app.use(cors());
 app.use(express.json());
 
@@ -30,6 +30,8 @@ async function run() {
         const ordersCollection = client.db('TapForDeliciousDB').collection('orders');
         const restaurantsCollection = client.db('TapForDeliciousDB').collection('restaurants');
         
+        
+        // Restaurants
         app.get('/services', async (req, res) => {
             const query = {};
             const options = await servicesCollection.find(query).toArray();
