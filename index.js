@@ -28,17 +28,14 @@ async function run() {
         const blogsCollection = client.db('TapForDeliciousDB').collection('blogs');
         const reviewCollection = client.db('TapForDeliciousDB').collection('reviews');
         const ordersCollection = client.db('TapForDeliciousDB').collection('orders');
-
-        // Top Food part
-
-        // Top Food part
+        const restaurantsCollection = client.db('TapForDeliciousDB').collection('restaurants');
         
         app.get('/services', async (req, res) => {
             const query = {};
             const options = await servicesCollection.find(query).toArray();
             res.send(options);
         });
-
+       
         app.get('/services-limit', async (req, res) => {
             const query = {};
             const cursor = servicesCollection.find(query);
@@ -52,6 +49,19 @@ async function run() {
             const service = await servicesCollection.findOne(query);
             res.send(service);
         });
+
+
+
+        // ------------ Restaurants -------------- //
+        app.get('/restaurants', async (req, res) => {
+            const query = {};
+            const result = await restaurantsCollection.find(query).toArray();
+            res.send(result);
+        })
+
+
+
+
 
         //review
         app.get('/reviews', async (req, res) => {
@@ -87,7 +97,7 @@ async function run() {
         });
 
         app.get('/users', async (req, res) => {
-            const query = {};
+            const query = { role: "buyer" };
             const users = await usersCollection.find(query).toArray();
             res.send(users);
         })
