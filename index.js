@@ -29,20 +29,13 @@ async function run() {
         const reviewCollection = client.db('TapForDeliciousDB').collection('reviews');
         const ordersCollection = client.db('TapForDeliciousDB').collection('orders');
         const restaurantsCollection = client.db('TapForDeliciousDB').collection('restaurants');
-
-        // Restaurants
+        
         app.get('/services', async (req, res) => {
             const query = {};
             const options = await servicesCollection.find(query).toArray();
             res.send(options);
         });
-        app.get('/foodservices', async (req, res) => {
-
-            const options = await servicesCollection.find({ item: { $elemMatch: { name: "Brown Pie" } } }
-            ).toArray();
-            console.log(options);
-            res.send(options);
-        });
+       
         app.get('/services-limit', async (req, res) => {
             const query = {};
             const cursor = servicesCollection.find(query);
