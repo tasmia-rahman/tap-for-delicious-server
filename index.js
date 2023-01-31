@@ -29,8 +29,8 @@ async function run() {
         const reviewCollection = client.db('TapForDeliciousDB').collection('reviews');
         const ordersCollection = client.db('TapForDeliciousDB').collection('orders');
         const restaurantsCollection = client.db('TapForDeliciousDB').collection('restaurants');
-        
-        
+        const foodsCollection = client.db('TapForDeliciousDB').collection('foods');
+
         // Restaurants
         app.get('/services', async (req, res) => {
             const query = {};
@@ -61,8 +61,21 @@ async function run() {
             res.send(result);
         })
 
+        app.get('/restaurant/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const result = await restaurantsCollection.findOne(query);
+            res.send(result);
+        });
 
 
+        //------------------ Foods -----------------//
+        app.get('/restaurants/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { resEmail: email };
+            const result = await foodsCollection.find(query).toArray();
+            res.send(result);
+        })
 
 
         //review
@@ -76,7 +89,6 @@ async function run() {
 
         app.post('/reviews', async (req, res) => {
             const review = req.body;
-            console.log(review)
             const result = await reviewCollection.insertOne(review);
             res.send(result);
 
