@@ -76,13 +76,19 @@ async function run() {
             const result = await foodsCollection.find(query).toArray();
             res.send(result);
         })
+        app.get('/topfood', async (req, res) => {
+            const query = {};
+            const cursor = foodsCollection.find(query);
+            const result = await cursor.sort({ name: 1 }).toArray();
+            res.send(result);
+        })
 
 
         //review
         app.get('/reviews', async (req, res) => {
             const query = {};
             const cursor = reviewCollection.find(query);
-            const reviews = await cursor.toArray().sort({ _id: -1 });
+            const reviews = await cursor.sort({ _id: -1 }).toArray();
             res.send(reviews);
 
         });
