@@ -46,6 +46,12 @@ async function run() {
         });
 
         // ------------ Restaurants -------------- //
+        app.post('/restaurant', async (req, res) => {
+            const restaurant = req.body;
+            const result = await restaurantsCollection.insertOne(restaurant);
+            res.send(result);
+        });
+
         app.get('/restaurants', async (req, res) => {
             const query = {};
             const result = await restaurantsCollection.find(query).toArray();
@@ -69,13 +75,13 @@ async function run() {
         app.get('/topfood', async (req, res) => {
             const query = {};
             const cursor = foodsCollection.find(query);
-            const result = await cursor.sort({name:1}).toArray();
+            const result = await cursor.sort({ name: 1 }).toArray();
             res.send(result);
         })
         app.get('/topfood-limit', async (req, res) => {
             const query = {};
             const cursor = foodsCollection.find(query);
-            const result = await cursor.sort({name:1}).limit(4).toArray();
+            const result = await cursor.sort({ name: 1 }).limit(4).toArray();
             res.send(result);
         })
 
@@ -156,6 +162,13 @@ async function run() {
         app.get('/orders/:email', async (req, res) => {
             const email = req.params.email;
             const query = { buyerEmail: email };
+            const orders = await ordersCollection.find(query).toArray();
+            res.send(orders);
+        });
+
+        app.get('/seller_orders/:restaurantName', async (req, res) => {
+            const restaurantName = req.params.restaurantName;
+            const query = { restaurantName: restaurantName };
             const orders = await ordersCollection.find(query).toArray();
             res.send(orders);
         });
