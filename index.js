@@ -76,8 +76,13 @@ async function run() {
         app.get('/topfood', async (req, res) => {
             const query = {};
             const cursor = foodsCollection.find(query);
+            const result = await cursor.sort({name:1}).toArray();
+            res.send(result);
+        })
+        app.get('/topfood-limit', async (req, res) => {
+            const query = {};
+            const cursor = foodsCollection.find(query);
             const result = await cursor.sort({name:1}).limit(4).toArray();
-            console.log(result);
             res.send(result);
         })
 
