@@ -37,7 +37,7 @@ async function run() {
             const options = await servicesCollection.find(query).toArray();
             res.send(options);
         });
-       
+
         app.get('/services-limit', async (req, res) => {
             const query = {};
             const cursor = servicesCollection.find(query);
