@@ -1,17 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-
-
 require('dotenv').config();
 
 const app = express();
-
-
 const port = process.env.PORT || 5000;
-
-
-
 
 // middle wares  
 app.use(cors());
@@ -52,9 +45,14 @@ async function run() {
             res.send(service);
         });
 
-
-
         // ------------ Restaurants -------------- //
+        app.post('/restaurant', async (req, res) => {
+            const restaurant = req.body;
+            const result = await restaurantsCollection.insertOne(restaurant);
+            res.send(result);
+
+        });
+
         app.get('/restaurants', async (req, res) => {
             const query = {};
             const result = await restaurantsCollection.find(query).toArray();
@@ -67,7 +65,6 @@ async function run() {
             const result = await restaurantsCollection.findOne(query);
             res.send(result);
         });
-
 
         //------------------ Foods -----------------//
         app.get('/restaurants/:email', async (req, res) => {
@@ -82,7 +79,6 @@ async function run() {
             const result = await cursor.sort({ name: 1 }).toArray();
             res.send(result);
         })
-
 
         //review
         app.get('/reviews', async (req, res) => {
@@ -122,6 +118,27 @@ async function run() {
             res.send(users);
         })
 
+        //User role
+        app.get('/users/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+            if (user.role === 'seller') {
+                sellerInfo = user;
+            }
+            else {
+                sellerInfo = {};
+            }
+
+            if (user.role === 'buyer') {
+                buyerInfo = user;
+            }
+            else {
+                buyerInfo = {};
+            }
+            res.send({ sellerInfo, buyerInfo, isAdmin: user?.role === 'admin', isSeller: user?.role === 'seller', isBuyer: user?.role === 'buyer' });
+        })
+
         // Blogs
         app.get('/blogs', async (req, res) => {
             const query = {};
@@ -137,11 +154,13 @@ async function run() {
         });
 
         // Orders
-        app.get('/orders', async (req, res) => {
-            const query = {};
+        app.get('/orders/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { buyerEmail: email };
             const orders = await ordersCollection.find(query).toArray();
+            console.log(orders);
             res.send(orders);
-        })
+        });
 
         app.post('/orders', async (req, res) => {
             const order = req.body;
