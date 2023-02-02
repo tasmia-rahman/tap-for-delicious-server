@@ -56,12 +56,12 @@ async function run() {
 
         // ------------ Restaurants -------------- //
         app.post('/restaurant', async (req, res) => {
-            const review = req.body;
-            const result = await restaurantsCollection.insertOne(review);
+            const restaurant = req.body;
+            const result = await restaurantsCollection.insertOne(restaurant);
             res.send(result);
 
         });
-        
+
         app.get('/restaurants', async (req, res) => {
             const query = {};
             const result = await restaurantsCollection.find(query).toArray();
