@@ -76,21 +76,27 @@ async function run() {
         app.get('/topfood', async (req, res) => {
             const query = {};
             const cursor = foodsCollection.find(query);
-            const result = await cursor.sort({name:1}).toArray();
+            const result = await cursor.sort({ name: 1 }).toArray();
             res.send(result);
         })
         app.get('/topfood-limit', async (req, res) => {
             const query = {};
             const cursor = foodsCollection.find(query);
-            const result = await cursor.sort({name:1}).limit(4).toArray();
+            const result = await cursor.sort({ name: 1 }).limit(4).toArray();
             res.send(result);
         })
+
+        app.post('/food', async (req, res) => {
+            const food = req.body;
+            const result = await foodsCollection.insertOne(food);
+            res.send(result);
+        });
 
         //review
         app.get('/reviews', async (req, res) => {
             const query = {};
             const cursor = reviewCollection.find(query);
-            const reviews = await cursor.sort({ _id: -1 }).toArray();
+            const reviews = await cursor.sort({ _id: -1 }).limit(6).toArray();
             res.send(reviews);
 
         });
@@ -164,7 +170,6 @@ async function run() {
             const email = req.params.email;
             const query = { buyerEmail: email };
             const orders = await ordersCollection.find(query).toArray();
-            console.log(orders);
             res.send(orders);
         });
 
