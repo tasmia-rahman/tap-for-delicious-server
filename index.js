@@ -128,14 +128,14 @@ async function run() {
             const email = req.params.email;
             const query = { email: email };
             const user = await usersCollection.findOne(query);
-            if (user.role === 'seller') {
+            if (user?.role === 'seller') {
                 sellerInfo = user;
             }
             else {
                 sellerInfo = {};
             }
 
-            if (user.role === 'buyer') {
+            if (user?.role === 'buyer') {
                 buyerInfo = user;
             }
             else {
@@ -171,6 +171,27 @@ async function run() {
             const query = { restaurantName: restaurantName };
             const orders = await ordersCollection.find(query).toArray();
             res.send(orders);
+        });
+
+        app.get('/seller_orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const order = await ordersCollection.findOne(filter);
+            res.send(order);
+        });
+
+        app.put('/seller_orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const order = req.body;
+            const updatedDoc = {
+                $set: {
+                    orderStatus: order.orderStatus
+                }
+            }
+            const options = { upsert: true };
+            const result = await ordersCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
         });
 
         app.post('/orders', async (req, res) => {
