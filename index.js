@@ -83,14 +83,15 @@ async function run() {
         //review
         app.get('/reviews', async (req, res) => {
             const query = {};
-            const cursor = reviewCollection.find(query);
-            const reviews = await cursor.sort({ _id: -1 }).toArray();
+            const cursor = reviewCollection.find(query).sort({ _id: -1 });
+            const reviews = await cursor. limit(6).toArray();
             res.send(reviews);
 
         });
 
         app.post('/reviews', async (req, res) => {
             const review = req.body;
+            review.date = Date();
             const result = await reviewCollection.insertOne(review);
             res.send(result);
 
