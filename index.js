@@ -89,7 +89,7 @@ async function run() {
         app.get('/reviews', async (req, res) => {
             const query = {};
             const cursor = reviewCollection.find(query).sort({ _id: -1 });
-            const reviews = await cursor. limit(6).toArray();
+            const reviews = await cursor.limit(6).toArray();
             res.send(reviews);
 
         });
@@ -124,6 +124,13 @@ async function run() {
             res.send(users);
         })
 
+        app.delete('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const result = await usersCollection.deleteOne(filter);
+            res.send(result);
+        })
+
         //User role
         app.get('/users/:email', async (req, res) => {
             const email = req.params.email;
@@ -145,6 +152,13 @@ async function run() {
             res.send({ sellerInfo, buyerInfo, isAdmin: user?.role === 'admin', isSeller: user?.role === 'seller', isBuyer: user?.role === 'buyer' });
         })
 
+        //Buyers
+        app.get('/buyers', async (req, res) => {
+            const query = { role: 'buyer' };
+            const buyers = await usersCollection.find(query).toArray();
+            res.send(buyers);
+        })
+
         // Blogs
         app.get('/blogs', async (req, res) => {
             const query = {};
@@ -160,6 +174,12 @@ async function run() {
         });
 
         // Orders
+        app.get('/orders', async (req, res) => {
+            const query = {};
+            const orders = await ordersCollection.find(query).toArray();
+            res.send(orders);
+        });
+
         app.get('/orders/:email', async (req, res) => {
             const email = req.params.email;
             const query = { buyerEmail: email };
