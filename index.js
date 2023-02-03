@@ -187,7 +187,7 @@ async function run() {
             res.send(orders);
         });
 
-        app.get('/seller_orders/:restaurantName', async (req, res) => {
+        app.get('/seller_res_orders/:restaurantName', async (req, res) => {
             const restaurantName = req.params.restaurantName;
             const query = { restaurantName: restaurantName };
             const orders = await ordersCollection.find(query).toArray();
