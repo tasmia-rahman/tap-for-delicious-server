@@ -132,9 +132,9 @@ async function run() {
         })
 
         //User role
-        app.get('/users/:email', async (req, res) => {
-            const email = req.params.email;
-            const query = { email: email };
+        app.get('/users/:displayName', async (req, res) => {
+            const displayName = req.params.displayName;
+            const query = { displayName: displayName };
             const user = await usersCollection.findOne(query);
             if (user?.role === 'seller') {
                 sellerInfo = user;
