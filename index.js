@@ -114,6 +114,16 @@ async function run() {
                 const message = 'User already exists'
                 return res.send({ acknowledged: false, message: message })
             }
+            // For facebook
+            const filter = {
+                uid: user.uid
+            }
+            const alreadyFacebookUser = await usersCollection.find(filter).toArray();
+            if (alreadyFacebookUser.length) {
+                const message = 'User already exists'
+                return res.send({ acknowledged: false, message: message })
+            }
+
             const result = await usersCollection.insertOne(user);
             res.send(result);
         });
