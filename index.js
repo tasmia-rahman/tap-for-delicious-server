@@ -184,34 +184,34 @@ async function run() {
         });
 
         // Orders
-        app.get('/orders', async (req, res) => {
+        app.get('/all_orders', async (req, res) => {
             const query = {};
             const orders = await ordersCollection.find(query).toArray();
             res.send(orders);
         });
 
-        app.get('/orders/:email', async (req, res) => {
+        app.get('/orders_with_uid/:uid', async (req, res) => {
+            const uid = req.params.uid;
+            const query = { uid: uid };
+            const orders = await ordersCollection.find(query).toArray();
+            res.send(orders);
+        });
+
+        app.get('/orders_with_email/:email', async (req, res) => {
             const email = req.params.email;
             const query = { buyerEmail: email };
             const orders = await ordersCollection.find(query).toArray();
             res.send(orders);
         });
 
-        app.get('/seller_res_orders/:restaurantName', async (req, res) => {
+        app.get('/seller_orders/:restaurantName', async (req, res) => {
             const restaurantName = req.params.restaurantName;
             const query = { restaurantName: restaurantName };
             const orders = await ordersCollection.find(query).toArray();
             res.send(orders);
         });
 
-        app.get('/seller_orders/:id', async (req, res) => {
-            const id = req.params.id;
-            const filter = { _id: ObjectId(id) };
-            const order = await ordersCollection.findOne(filter);
-            res.send(order);
-        });
-
-        app.put('/seller_orders/:id', async (req, res) => {
+        app.put('/order_status/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
             const order = req.body;
