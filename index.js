@@ -26,6 +26,7 @@ async function run() {
         const ordersCollection = client.db('TapForDeliciousDB').collection('orders');
         const restaurantsCollection = client.db('TapForDeliciousDB').collection('restaurants');
         const foodsCollection = client.db('TapForDeliciousDB').collection('foods');
+        const reportsCollection = client.db('TapForDeliciousDB').collection('reports');
         const foodsSearchCollection = client.db('TapForDeliciousDB').collection('recipies');
 
         // Restaurants
@@ -265,6 +266,28 @@ async function run() {
             const result = await ordersCollection.deleteOne(filter);
             res.send(result);
         })
+
+        // Reports
+        app.get('/reports', async (req, res) => {
+            const query = {};
+            const reports = await reportsCollection.find(query).toArray();
+            res.send(reports);
+        });
+
+        app.post('/reports', async (req, res) => {
+            const report = req.body;
+            report.date = Date();
+            const result = await reportsCollection.insertOne(report);
+            res.send(result);
+        });
+
+        app.delete('/reports/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const result = await reportsCollection.deleteOne(filter);
+            res.send(result);
+        })
+
     }
     finally {
 
