@@ -1,12 +1,15 @@
 const express = require('express');
 const cors = require('cors');
+const bodyParser = require("body-parser");
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-// middle wares  
+// middle wares
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extented: true }));
 app.use(cors());
 app.use(express.json());
 
@@ -23,6 +26,7 @@ async function run() {
         const ordersCollection = client.db('TapForDeliciousDB').collection('orders');
         const restaurantsCollection = client.db('TapForDeliciousDB').collection('restaurants');
         const foodsCollection = client.db('TapForDeliciousDB').collection('foods');
+        const foodsSearchCollection = client.db('TapForDeliciousDB').collection('recipies');
 
         // Restaurants
         app.get('/services', async (req, res) => {
@@ -30,6 +34,29 @@ async function run() {
             const options = await servicesCollection.find(query).toArray();
             res.send(options);
         });
+
+        // search start
+        app.get('/search', async (req, res) => {
+            try{
+                let result = await foodsCollection.aggregate([
+                    {
+                        "$search": {
+                            "autocomplete" : {
+                                "query" : `${req.query.term}`,
+                                "path": "name",
+                                "fuzzy": {
+                                    "maxEdits": 2  
+                                }
+                            }
+                        }
+                    }
+                ]).toArray();
+                res.send(result);
+            }catch(e){
+                res.status(500).send({ message: e.message});
+            }
+        });
+        // search end
 
         app.get('/services-limit', async (req, res) => {
             const query = {};
