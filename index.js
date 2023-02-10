@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const jwt= require('jsonwebtoken');
+
 require('dotenv').config();
 
 const app = express();
@@ -11,8 +13,30 @@ app.use(cors());
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.mpeq17q.mongodb.net/?retryWrites=true&w=majority`;
+// console.log(uri);
 
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+
+function verifyJWT(req, res,next){
+    console.log('token inside verifyJWT', req.headers.authorization);
+    const authHeader = req.headers.authorization;
+    if(!authHeader){
+        return res.status(401).send('unauthorized access');
+
+    }
+
+    const token = authHeader.split(' ')[1];
+    jwt.verify(token, process.env.ACCESS_TOKEN, function(err, decoded){
+        if(err){
+            console.log(err)
+            return res.status(403).send({message: 'forbidden access'})
+
+        }
+        req.decoded = decoded;
+        next();
+    })
+}
+
 
 async function run() {
     try {
@@ -23,6 +47,8 @@ async function run() {
         const ordersCollection = client.db('TapForDeliciousDB').collection('orders');
         const restaurantsCollection = client.db('TapForDeliciousDB').collection('restaurants');
         const foodsCollection = client.db('TapForDeliciousDB').collection('foods');
+
+      
 
         // Restaurants
         app.get('/services', async (req, res) => {
@@ -46,7 +72,7 @@ async function run() {
         });
 
         // ------------ Restaurants -------------- //
-        app.post('/restaurant', async (req, res) => {
+        app.post('/restaurant',verifyJWT, async (req, res) => {
             const restaurant = req.body;
             const result = await restaurantsCollection.insertOne(restaurant);
             res.send(result);
@@ -96,6 +122,16 @@ async function run() {
             res.send(result);
 
         });
+
+        //JWT
+        app.get('/jwt', async(req, res)=>{
+            const email = req.query.email;
+                const token = jwt.sign({email}, process.env.ACCESS_TOKEN,{expiresIn:"7d"});
+                console.log(token);
+                return res.send({accessToken: token});
+
+        });
+
 
         // Users
         app.post('/users', async (req, res) => {
@@ -147,7 +183,7 @@ async function run() {
             res.send(blogs);
         })
 
-        app.post('/blogs', async (req, res) => {
+        app.post('/blogs',verifyJWT, async (req, res) => {
             const blog = req.body;
             blog.date = Date();
             const result = await blogsCollection.insertOne(blog);
@@ -157,13 +193,19 @@ async function run() {
         // Orders
         app.get('/orders/:email', async (req, res) => {
             const email = req.params.email;
+            const decodedEmail = req.decoded.email;
+
+            if(email !== decodedEmail){
+                return res.status(403).send({message: 'forbidden access'});
+            }
+           
             const query = { buyerEmail: email };
             const orders = await ordersCollection.find(query).toArray();
             console.log(orders);
             res.send(orders);
         });
 
-        app.post('/orders', async (req, res) => {
+        app.post('/orders', verifyJWT, async (req, res) => {
             const order = req.body;
             order.date = Date();
             const result = await ordersCollection.insertOne(order);
