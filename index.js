@@ -64,23 +64,23 @@ async function run() {
 
         // search start
         app.get('/search', async (req, res) => {
-            try{
+            try {
                 let result = await foodsCollection.aggregate([
                     {
                         "$search": {
-                            "autocomplete" : {
-                                "query" : `${req.query.term}`,
+                            "autocomplete": {
+                                "query": `${req.query.term}`,
                                 "path": "name",
                                 "fuzzy": {
-                                    "maxEdits": 2  
+                                    "maxEdits": 2
                                 }
                             }
                         }
                     }
                 ]).toArray();
                 res.send(result);
-            }catch(e){
-                res.status(500).send({ message: e.message});
+            } catch (e) {
+                res.status(500).send({ message: e.message });
             }
         });
         // search end
@@ -112,6 +112,12 @@ async function run() {
             res.send(result);
         })
 
+        app.get('/restaurants-limit', async (req, res) => {
+            const query = {};
+            const result = await restaurantsCollection.find(query).limit(6).toArray();
+            res.send(result);
+        })
+
         app.get('/restaurant/:email', async (req, res) => {
             const email = req.params.email;
             const query = { email: email };
@@ -138,6 +144,12 @@ async function run() {
             const result = await cursor.sort({ name: 1 }).limit(4).toArray();
             res.send(result);
         })
+
+        app.post('/food', async (req, res) => {
+            const food = req.body;
+            const result = await foodsCollection.insertOne(food);
+            res.send(result);
+        });
 
         //review
         app.get('/reviews', async (req, res) => {
