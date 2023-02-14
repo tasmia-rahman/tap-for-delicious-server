@@ -2,12 +2,14 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require("body-parser");
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { response } = require('express');
 const jwt= require('jsonwebtoken');
-
 require('dotenv').config();
 
-const app = express();
+const stripe = require("stripe")('sk_test_51M6A9xByOjerh25uy7a3zcg8dJt6dJEZzgnemNa3HyIu0dk1wnWhw2HpwBJZHFABjWYvvnRTVHdbVt97iBPzFv0t00IqWoYXbz');
 const port = process.env.PORT || 5000;
+const app = express();
+
 
 // middle wares
 app.use(bodyParser.json());
@@ -52,9 +54,6 @@ async function run() {
         const foodsCollection = client.db('TapForDeliciousDB').collection('foods');
         const reportsCollection = client.db('TapForDeliciousDB').collection('reports');
         const foodsSearchCollection = client.db('TapForDeliciousDB').collection('recipies');
-
-      
-
         // Restaurants
         app.get('/services', async (req, res) => {
             const query = {};
@@ -83,7 +82,38 @@ async function run() {
                 res.status(500).send({ message: e.message });
             }
         });
+
+        app.get("/search/:id", async (req, res) => {
+            try {
+                let result = await foodsCollection.findOne({ "_id": ObjectId(request.params.id) });
+                response.send(result);
+            }
+            catch (e) {
+                res.status(500).send({ message: e.message });
+            }
+        })
         // search end
+
+        //Payment-start
+
+        app.post('/create-payment-intent', async (req, res) => {
+            const order = req.body;
+            const price = order.price;
+            const amount = price * 100;
+
+            const paymentIntent = await stripe.paymentIntents.create({
+                currency: 'usd',
+                amount: amount,
+                "payment_method_types": [
+                    "card"
+                ]
+            });
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
+        });
+
+        //Payment-end
 
         app.get('/services-limit', async (req, res) => {
             const query = {};
