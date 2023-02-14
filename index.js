@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 const { response } = require('express');
-const jwt= require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 
 require('dotenv').config();
 
@@ -57,6 +57,7 @@ async function run() {
         const reportsCollection = client.db('TapForDeliciousDB').collection('reports');
         const foodsSearchCollection = client.db('TapForDeliciousDB').collection('recipies');
         const topFoodsCollection = client.db('TapForDeliciousDB').collection('topFoods');
+        const advertisesCollection = client.db('TapForDeliciousDB').collection('advertises');
 
         // Restaurants
         app.get('/services', async (req, res) => {
@@ -369,6 +370,27 @@ async function run() {
             });
             res.send(result);
         });
+
+        // Advertise
+        app.get('/advertises', async (req, res) => {
+            const query = {};
+            const advertises = await advertisesCollection.find(query).toArray();
+            res.send(advertises);
+        });
+
+        app.post('/advertises', async (req, res) => {
+            const advertise = req.body;
+            advertise.date = Date();
+            const result = await advertisesCollection.insertOne(advertise);
+            res.send(result);
+        });
+
+        app.delete('/advertises/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const result = await advertisesCollection.deleteOne(filter);
+            res.send(result);
+        })
 
         // Reports
         app.get('/reports', async (req, res) => {
