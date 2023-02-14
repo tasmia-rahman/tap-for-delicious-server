@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require("body-parser");
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const jwt= require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 
 require('dotenv').config();
 
@@ -20,19 +20,19 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
-function verifyJWT(req, res,next){
+function verifyJWT(req, res, next) {
     console.log('token inside verifyJWT', req.headers.authorization);
     const authHeader = req.headers.authorization;
-    if(!authHeader){
+    if (!authHeader) {
         return res.status(401).send('unauthorized access');
 
     }
 
     const token = authHeader.split(' ')[1];
-    jwt.verify(token, process.env.ACCESS_TOKEN, function(err, decoded){
-        if(err){
+    jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
+        if (err) {
             console.log(err)
-            return res.status(403).send({message: 'forbidden access'})
+            return res.status(403).send({ message: 'forbidden access' })
 
         }
         req.decoded = decoded;
@@ -52,8 +52,7 @@ async function run() {
         const foodsCollection = client.db('TapForDeliciousDB').collection('foods');
         const reportsCollection = client.db('TapForDeliciousDB').collection('reports');
         const foodsSearchCollection = client.db('TapForDeliciousDB').collection('recipies');
-
-      
+        const topFoodsCollection = client.db('TapForDeliciousDB').collection('topFoods');
 
         // Restaurants
         app.get('/services', async (req, res) => {
@@ -64,23 +63,23 @@ async function run() {
 
         // search start
         app.get('/search', async (req, res) => {
-            try{
+            try {
                 let result = await foodsCollection.aggregate([
                     {
                         "$search": {
-                            "autocomplete" : {
-                                "query" : `${req.query.term}`,
+                            "autocomplete": {
+                                "query": `${req.query.term}`,
                                 "path": "name",
                                 "fuzzy": {
-                                    "maxEdits": 2  
+                                    "maxEdits": 2
                                 }
                             }
                         }
                     }
                 ]).toArray();
                 res.send(result);
-            }catch(e){
-                res.status(500).send({ message: e.message});
+            } catch (e) {
+                res.status(500).send({ message: e.message });
             }
         });
         // search end
@@ -100,7 +99,7 @@ async function run() {
         });
 
         // ------------ Restaurants -------------- //
-        app.post('/restaurant',verifyJWT, async (req, res) => {
+        app.post('/restaurant', verifyJWT, async (req, res) => {
             const restaurant = req.body;
             const result = await restaurantsCollection.insertOne(restaurant);
             res.send(result);
@@ -157,11 +156,11 @@ async function run() {
         });
 
         //JWT
-        app.get('/jwt', async(req, res)=>{
+        app.get('/jwt', async (req, res) => {
             const email = req.query.email;
-                const token = jwt.sign({email}, process.env.ACCESS_TOKEN,{expiresIn:"7d"});
-                console.log(token);
-                return res.send({accessToken: token});
+            const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, { expiresIn: "7d" });
+            console.log(token);
+            return res.send({ accessToken: token });
 
         });
 
@@ -240,7 +239,7 @@ async function run() {
             res.send(blogs);
         })
 
-        app.post('/blogs',verifyJWT, async (req, res) => {
+        app.post('/blogs', verifyJWT, async (req, res) => {
             const blog = req.body;
             blog.date = Date();
             const result = await blogsCollection.insertOne(blog);
@@ -265,17 +264,15 @@ async function run() {
             const email = req.params.email;
             const decodedEmail = req.decoded.email;
 
-            if(email !== decodedEmail){
-                return res.status(403).send({message: 'forbidden access'});
+            if (email !== decodedEmail) {
+                return res.status(403).send({ message: 'forbidden access' });
             }
-           
+
             const query = { buyerEmail: email };
             const orders = await ordersCollection.find(query).toArray();
             res.send(orders);
         });
 
-
-       
         app.get('/seller_orders/:restaurantName', async (req, res) => {
             const restaurantName = req.params.restaurantName;
             const query = { restaurantName: restaurantName };
@@ -298,7 +295,6 @@ async function run() {
         });
 
         app.post('/orders', async (req, res) => {
-
             const order = req.body;
             order.date = Date();
             const result = await ordersCollection.insertOne(order);
@@ -311,6 +307,21 @@ async function run() {
             const result = await ordersCollection.deleteOne(filter);
             res.send(result);
         })
+
+        // Top foods
+        let uniqueId = 1;
+        app.post('/topFoods', async (req, res) => {
+            const cartItem = req.body;
+            cartItem._id = uniqueId;
+            uniqueId++;
+            console.log(cartItem);
+            const result = await topFoodsCollection.insertOne(cartItem);
+            res.set({
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+            });
+            res.send(result);
+        });
 
         // Reports
         app.get('/reports', async (req, res) => {
