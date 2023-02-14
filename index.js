@@ -2,12 +2,16 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require("body-parser");
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const jwt = require('jsonwebtoken');
+
+const { response } = require('express');
+const jwt= require('jsonwebtoken');
 
 require('dotenv').config();
 
-const app = express();
+const stripe = require("stripe")('sk_test_51M6A9xByOjerh25uy7a3zcg8dJt6dJEZzgnemNa3HyIu0dk1wnWhw2HpwBJZHFABjWYvvnRTVHdbVt97iBPzFv0t00IqWoYXbz');
 const port = process.env.PORT || 5000;
+const app = express();
+
 
 // middle wares
 app.use(bodyParser.json());
@@ -82,7 +86,38 @@ async function run() {
                 res.status(500).send({ message: e.message });
             }
         });
+
+        app.get("/search/:id", async (req, res) => {
+            try {
+                let result = await foodsCollection.findOne({ "_id": ObjectId(request.params.id) });
+                response.send(result);
+            }
+            catch (e) {
+                res.status(500).send({ message: e.message });
+            }
+        })
         // search end
+
+        //Payment-start
+
+        app.post('/create-payment-intent', async (req, res) => {
+            const order = req.body.total;
+            const price = order;
+            const amount = price * 100;
+
+            const paymentIntent = await stripe.paymentIntents.create({
+                currency: 'usd',
+                amount: amount,
+                "payment_method_types": [
+                    "card"
+                ]
+            });
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
+        });
+
+        //Payment-end
 
         app.get('/services-limit', async (req, res) => {
             const query = {};
@@ -108,6 +143,12 @@ async function run() {
         app.get('/restaurants', async (req, res) => {
             const query = {};
             const result = await restaurantsCollection.find(query).toArray();
+            res.send(result);
+        })
+
+        app.get('/restaurants-limit', async (req, res) => {
+            const query = {};
+            const result = await restaurantsCollection.find(query).limit(6).toArray();
             res.send(result);
         })
 
@@ -137,6 +178,12 @@ async function run() {
             const result = await cursor.sort({ name: 1 }).limit(4).toArray();
             res.send(result);
         })
+
+        app.post('/food', async (req, res) => {
+            const food = req.body;
+            const result = await foodsCollection.insertOne(food);
+            res.send(result);
+        });
 
         //review
         app.get('/reviews', async (req, res) => {
