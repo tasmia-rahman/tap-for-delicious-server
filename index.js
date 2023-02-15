@@ -388,9 +388,16 @@ async function run() {
             res.send(result);
         });
 
-        // Advertise
+        // Advertises
         app.get('/advertises', async (req, res) => {
             const query = {};
+            const advertises = await advertisesCollection.find(query).toArray();
+            res.send(advertises);
+        });
+
+        app.get('/advertises/:restaurantName', async (req, res) => {
+            const restaurantName = req.params.restaurantName;
+            const query = { restaurantName: restaurantName };
             const advertises = await advertisesCollection.find(query).toArray();
             res.send(advertises);
         });
@@ -401,6 +408,18 @@ async function run() {
             const result = await advertisesCollection.insertOne(advertise);
             res.send(result);
         });
+
+        app.patch('/advertises/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const updatedDoc = {
+                $set: {
+                    isAdvertised: true
+                }
+            }
+            const result = await advertisesCollection.updateOne(filter, updatedDoc);
+            res.send(result);
+        })
 
         app.delete('/advertises/:id', async (req, res) => {
             const id = req.params.id;
