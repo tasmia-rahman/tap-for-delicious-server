@@ -58,6 +58,7 @@ async function run() {
         const foodsSearchCollection = client.db('TapForDeliciousDB').collection('recipies');
         const topFoodsCollection = client.db('TapForDeliciousDB').collection('topFoods');
         const advertisesCollection = client.db('TapForDeliciousDB').collection('advertises');
+        const paymentsCollection = client.db('TapForDeliciousDB').collection('payments');
 
         // Restaurants
         app.get('/services', async (req, res) => {
@@ -117,6 +118,22 @@ async function run() {
                 clientSecret: paymentIntent.client_secret,
             });
         });
+
+        app.post('/payments', async (req, res) => {
+            const payment = req.body;
+            console.log(payment);
+            const result = await paymentsCollection.insertOne(payment);
+            const id = payment.bookingId
+            const filter = { _id: ObjectId(id) }
+            const updatedDoc = {
+                $set: {
+                    paid: true,
+                    transactionId: payment.transactionId
+                }
+            }
+            const updatedResult = await ordersCollection.updateOne(filter, updatedDoc)
+            res.send(result);
+        })
 
         //Payment-end
 
