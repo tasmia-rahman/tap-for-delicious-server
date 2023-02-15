@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 
 require('dotenv').config();
 
-const stripe = require("stripe")('sk_test_51M6A9xByOjerh25uy7a3zcg8dJt6dJEZzgnemNa3HyIu0dk1wnWhw2HpwBJZHFABjWYvvnRTVHdbVt97iBPzFv0t00IqWoYXbz');
+const stripe = require("stripe")('sk_test_51MbMEwEEljFKzkqncKtudkxGL5t1Y7mdOebSwcL6fkaDbma5iAA7HEUmQcthw7dNStRs0nUjclAQcMxoAwt2wnFR00MzJ0PjJR');
 const port = process.env.PORT || 5000;
 const app = express();
 
