@@ -120,17 +120,18 @@ async function run() {
 
         app.post('/payments', async (req, res) => {
             const payment = req.body;
-            console.log(payment);
             const result = await paymentsCollection.insertOne(payment);
-            const id = payment.bookingId
+            const id = payment.orderId
             const filter = { _id: ObjectId(id) }
+            const options={upsert:true}
             const updatedDoc = {
                 $set: {
                     paid: true,
                     transactionId: payment.transactionId
                 }
             }
-            const updatedResult = await ordersCollection.updateOne(filter, updatedDoc)
+            const updatedResult = await ordersCollection.updateOne(filter, updatedDoc,options)
+            console.log(updatedResult);
             res.send(result);
         })
 
