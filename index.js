@@ -55,7 +55,6 @@ async function run() {
         const restaurantsCollection = client.db('TapForDeliciousDB').collection('restaurants');
         const foodsCollection = client.db('TapForDeliciousDB').collection('foods');
         const reportsCollection = client.db('TapForDeliciousDB').collection('reports');
-        const foodsSearchCollection = client.db('TapForDeliciousDB').collection('recipies');
         const topFoodsCollection = client.db('TapForDeliciousDB').collection('topFoods');
         const advertisesCollection = client.db('TapForDeliciousDB').collection('advertises');
         const paymentsCollection = client.db('TapForDeliciousDB').collection('payments');
