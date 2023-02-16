@@ -333,11 +333,11 @@ async function run() {
 
         app.get('/orders_with_email/:email', async (req, res) => {
             const email = req.params.email;
-            const decodedEmail = req.decoded.email;
+            // const decodedEmail = req.decoded.email;
 
-            if (email !== decodedEmail) {
-                return res.status(403).send({ message: 'forbidden access' });
-            }
+            // if (email !== decodedEmail) {
+            //     return res.status(403).send({ message: 'forbidden access' });
+            // }
 
             const query = { buyerEmail: email };
             const orders = await ordersCollection.find(query).toArray();
