@@ -241,15 +241,15 @@ async function run() {
                 const message = 'User already exists'
                 return res.send({ acknowledged: false, message: message })
             }
-            // For facebook
-            const filter = {
-                uid: user.uid
-            }
-            const alreadyFacebookUser = await usersCollection.find(filter).toArray();
-            if (alreadyFacebookUser.length) {
-                const message = 'User already exists'
-                return res.send({ acknowledged: false, message: message })
-            }
+            // // For facebook
+            // const filter = {
+            //     uid: user.uid
+            // }
+            // const alreadyFacebookUser = await usersCollection.find(filter).toArray();
+            // if (alreadyFacebookUser.length) {
+            //     const message = 'User already exists'
+            //     return res.send({ acknowledged: false, message: message })
+            // }
 
             const result = await usersCollection.insertOne(user);
             res.send(result);
@@ -310,7 +310,7 @@ async function run() {
             res.send(blogs);
         })
 
-        app.post('/blogs', verifyJWT, async (req, res) => {
+        app.post('/blogs', async (req, res) => {
             const blog = req.body;
             blog.date = Date();
             const result = await blogsCollection.insertOne(blog);
