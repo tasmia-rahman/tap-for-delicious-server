@@ -237,6 +237,8 @@ async function run() {
                 email: user.email
             }
             const alreadyUser = await usersCollection.find(query).toArray();
+
+            console.log("user", alreadyUser)
             if (alreadyUser.length) {
                 const message = 'User already exists'
                 return res.send({ acknowledged: false, message: message })
@@ -274,6 +276,28 @@ async function run() {
             const result = await usersCollection.findOne(query);
             res.send(result);
         })
+
+        app.put('/user', async (req, res) => {
+            const filterEmail = req.query.email;
+            const filter = { email: filterEmail }
+            const user = req.body;
+            const { displayName, phone, road, area, house, postal, photoUrl } = user;
+            const options = { upsert: true }
+            const updatedDoc = {
+                $set: {
+                    displayName: displayName,
+                    phone: phone,
+                    road: road,
+                    area: area,
+                    house: house,
+                    postal: postal,
+                    photoUrl: photoUrl
+                }
+            }
+            const result = await usersCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        })
+
 
         //User role
         app.get('/users/:email', async (req, res) => {
@@ -385,7 +409,6 @@ async function run() {
             const cartItem = req.body;
             cartItem._id = uniqueId;
             uniqueId++;
-            console.log(cartItem);
             const result = await topFoodsCollection.insertOne(cartItem);
             res.set({
                 "Content-Type": "application/json",
