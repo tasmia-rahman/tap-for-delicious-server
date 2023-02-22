@@ -123,14 +123,14 @@ async function run() {
             const result = await paymentsCollection.insertOne(payment);
             const id = payment.orderId
             const filter = { _id: ObjectId(id) }
-            const options={upsert:true}
+            const options = { upsert: true }
             const updatedDoc = {
                 $set: {
                     paid: true,
                     transactionId: payment.transactionId
                 }
             }
-            const updatedResult = await ordersCollection.updateOne(filter, updatedDoc,options)
+            const updatedResult = await ordersCollection.updateOne(filter, updatedDoc, options)
             console.log(updatedResult);
             res.send(result);
         })
@@ -331,7 +331,7 @@ async function run() {
         // Blogs
         app.get('/blogs', async (req, res) => {
             const query = {};
-            const blogs = await blogsCollection.find(query).toArray();
+            const blogs = await blogsCollection.find(query).sort({ _id: -1 }).toArray();
             res.send(blogs);
         })
 
