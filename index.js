@@ -235,11 +235,10 @@ async function run() {
             const user = req.body;
             user.joinDate = Date();
             const query = {
-                email: user.email
+                email: user.email,
+                uid: user.uid
             }
             const alreadyUser = await usersCollection.find(query).toArray();
-
-            console.log("user", alreadyUser)
             if (alreadyUser.length) {
                 const message = 'User already exists'
                 return res.send({ acknowledged: false, message: message })
@@ -271,9 +270,9 @@ async function run() {
             res.send(result);
         })
 
-        app.get('/user/:email', async (req, res) => {
-            const email = req.params.email;
-            const query = { email: email };
+        app.get('/user/:uid', async (req, res) => {
+            const uid = req.params.uid;
+            const query = { uid: uid };
             const result = await usersCollection.findOne(query);
             res.send(result);
         })
