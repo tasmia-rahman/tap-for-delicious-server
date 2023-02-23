@@ -238,6 +238,7 @@ async function run() {
                 uid: user.uid
             }
             const alreadyUser = await usersCollection.find(query).toArray();
+            console.log(alreadyUser)
             if (alreadyUser.length) {
                 const message = 'User already exists'
                 return res.send({ acknowledged: false, message: message })
@@ -277,10 +278,10 @@ async function run() {
         })
 
         app.put('/user', async (req, res) => {
-            const filterEmail = req.query.email;
-            const filter = { email: filterEmail }
+            const filterUid = req.query.uid;
+            const filter = { uid: filterUid }
             const user = req.body;
-            const { displayName, phone, road, area, house, postal, photoUrl } = user;
+            const { displayName, phone, road, area, house, postal, photoUrl, uid } = user;
             const options = { upsert: true }
             const updatedDoc = {
                 $set: {
@@ -290,7 +291,8 @@ async function run() {
                     area: area,
                     house: house,
                     postal: postal,
-                    photoUrl: photoUrl
+                    photoUrl: photoUrl,
+                    uid: uid
                 }
             }
             const result = await usersCollection.updateOne(filter, updatedDoc, options);
