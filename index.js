@@ -235,7 +235,6 @@ async function run() {
             const user = req.body;
             user.joinDate = Date();
             const query = {
-                email: user.email,
                 uid: user.uid
             }
             const alreadyUser = await usersCollection.find(query).toArray();
@@ -303,6 +302,26 @@ async function run() {
         app.get('/users/:email', async (req, res) => {
             const email = req.params.email;
             const query = { email: email };
+            const user = await usersCollection.findOne(query);
+            if (user?.role === 'seller') {
+                sellerInfo = user;
+            }
+            else {
+                sellerInfo = {};
+            }
+
+            if (user?.role === 'buyer') {
+                buyerInfo = user;
+            }
+            else {
+                buyerInfo = {};
+            }
+            res.send({ sellerInfo, buyerInfo, isAdmin: user?.role === 'admin', isSeller: user?.role === 'seller', isBuyer: user?.role === 'buyer' });
+        })
+
+        app.get('/all_users/:uid', async (req, res) => {
+            const uid = req.params.uid;
+            const query = { uid: uid };
             const user = await usersCollection.findOne(query);
             if (user?.role === 'seller') {
                 sellerInfo = user;
