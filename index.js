@@ -362,6 +362,37 @@ async function run() {
             res.send(result);
         });
 
+        app.put('/blog', async (req, res) => {
+            const id = req.query.id;
+            const filter = { _id: ObjectId(id) }
+            const uid = req.body.uid;
+            console.log(req.body.uid)
+            const options = { upsert: true }
+            const updatedDoc = {
+                $push: {
+                    like: {
+                        uid: uid
+                    }
+                }
+            }
+            const result = await blogsCollection.updateOne(filter, updatedDoc, options)
+            res.send(result);
+        });
+        app.put('/blog_dlt', async (req, res) => {
+            const id = req.query.id;
+            const filter = { _id: ObjectId(id) }
+            const uid = req.body.uid;
+            const options = { upsert: true }
+            const updatedDoc = {
+                $pull: {
+                    like: {
+                        uid: uid
+                    }
+                }
+            }
+            const result = await blogsCollection.updateOne(filter, updatedDoc, options)
+            res.send(result);
+        });
         // Orders
         app.get('/all_orders', async (req, res) => {
             const query = {};
