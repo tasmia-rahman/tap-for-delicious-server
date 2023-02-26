@@ -190,6 +190,14 @@ async function run() {
             const result = await cursor.sort({ name: 1 }).toArray();
             res.send(result);
         })
+        //search item..................................
+        app.get('/food/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const cursor = await foodsCollection.find(query).toArray();
+            res.send(cursor);
+        })
+
         app.get('/topfood-limit', async (req, res) => {
             const query = {};
             const cursor = foodsCollection.find(query);
