@@ -410,19 +410,13 @@ async function run() {
 
         app.get('/orders_with_uid/:uid', async (req, res) => {
             const uid = req.params.uid;
-            const query = { uid: uid };
+            const query = { buyerUid: uid };
             const orders = await ordersCollection.find(query).toArray();
             res.send(orders);
         });
 
         app.get('/orders_with_email/:email', async (req, res) => {
             const email = req.params.email;
-            // const decodedEmail = req.decoded.email;
-
-            // if (email !== decodedEmail) {
-            //     return res.status(403).send({ message: 'forbidden access' });
-            // }
-
             const query = { buyerEmail: email };
             const orders = await ordersCollection.find(query).toArray();
             res.send(orders);
