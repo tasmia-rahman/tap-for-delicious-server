@@ -190,6 +190,14 @@ async function run() {
             const result = await cursor.sort({ name: 1 }).toArray();
             res.send(result);
         })
+        //search item..................................
+        app.get('/food/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const cursor = await foodsCollection.find(query).toArray();
+            res.send(cursor);
+        })
+
         app.get('/topfood-limit', async (req, res) => {
             const query = {};
             const cursor = foodsCollection.find(query);
@@ -238,6 +246,7 @@ async function run() {
                 uid: user.uid
             }
             const alreadyUser = await usersCollection.find(query).toArray();
+            console.log(alreadyUser)
             if (alreadyUser.length) {
                 const message = 'User already exists'
                 return res.send({ acknowledged: false, message: message })
@@ -277,10 +286,10 @@ async function run() {
         })
 
         app.put('/user', async (req, res) => {
-            const filterEmail = req.query.email;
-            const filter = { email: filterEmail }
+            const filterUid = req.query.uid;
+            const filter = { uid: filterUid }
             const user = req.body;
-            const { displayName, phone, road, area, house, postal, photoUrl } = user;
+            const { displayName, phone, road, area, house, postal, photoUrl, uid } = user;
             const options = { upsert: true }
             const updatedDoc = {
                 $set: {
@@ -290,7 +299,8 @@ async function run() {
                     area: area,
                     house: house,
                     postal: postal,
-                    photoUrl: photoUrl
+                    photoUrl: photoUrl,
+                    uid: uid
                 }
             }
             const result = await usersCollection.updateOne(filter, updatedDoc, options);
@@ -360,6 +370,37 @@ async function run() {
             res.send(result);
         });
 
+        app.put('/blog', async (req, res) => {
+            const id = req.query.id;
+            const filter = { _id: ObjectId(id) }
+            const uid = req.body.uid;
+            console.log(req.body.uid)
+            const options = { upsert: true }
+            const updatedDoc = {
+                $push: {
+                    like: {
+                        uid: uid
+                    }
+                }
+            }
+            const result = await blogsCollection.updateOne(filter, updatedDoc, options)
+            res.send(result);
+        });
+        app.put('/blog_dlt', async (req, res) => {
+            const id = req.query.id;
+            const filter = { _id: ObjectId(id) }
+            const uid = req.body.uid;
+            const options = { upsert: true }
+            const updatedDoc = {
+                $pull: {
+                    like: {
+                        uid: uid
+                    }
+                }
+            }
+            const result = await blogsCollection.updateOne(filter, updatedDoc, options)
+            res.send(result);
+        });
         // Orders
         app.get('/all_orders', async (req, res) => {
             const query = {};
