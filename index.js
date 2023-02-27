@@ -131,7 +131,6 @@ async function run() {
                 }
             }
             const updatedResult = await ordersCollection.updateOne(filter, updatedDoc, options)
-            console.log(updatedResult);
             res.send(result);
         })
 
@@ -232,7 +231,6 @@ async function run() {
         app.get('/jwt', async (req, res) => {
             const email = req.query.email;
             const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, { expiresIn: "7d" });
-            console.log(token);
             return res.send({ accessToken: token });
 
         });
@@ -246,7 +244,6 @@ async function run() {
                 uid: user.uid
             }
             const alreadyUser = await usersCollection.find(query).toArray();
-            console.log(alreadyUser)
             if (alreadyUser.length) {
                 const message = 'User already exists'
                 return res.send({ acknowledged: false, message: message })
@@ -374,7 +371,6 @@ async function run() {
             const id = req.query.id;
             const filter = { _id: ObjectId(id) }
             const uid = req.body.uid;
-            console.log(req.body.uid)
             const options = { upsert: true }
             const updatedDoc = {
                 $push: {
@@ -401,6 +397,28 @@ async function run() {
             const result = await blogsCollection.updateOne(filter, updatedDoc, options)
             res.send(result);
         });
+
+        app.put('/blogs/comment', async (req, res) => {
+            const comment = req.body;
+            const filter = { _id: ObjectId(comment.id) }
+            const { text, commenter, commenterPhoto } = comment;
+            const options = { upsert: true }
+            const updatedDoc = {
+                $push: {
+                    comment: {
+                        text: text,
+                        commenter: commenter,
+                        commenterPhoto: commenterPhoto
+                    }
+                }
+            }
+
+            const result = await blogsCollection.updateOne(filter, updatedDoc, options)
+            res.send(result);
+        })
+
+
+
         // Orders
         app.get('/all_orders', async (req, res) => {
             const query = {};
