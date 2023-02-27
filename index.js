@@ -152,7 +152,7 @@ async function run() {
         });
 
         // ------------ Restaurants -------------- //
-        app.post('/restaurant', verifyJWT, async (req, res) => {
+        app.post('/restaurant', async (req, res) => {
             const restaurant = req.body;
             const result = await restaurantsCollection.insertOne(restaurant);
             res.send(result);
@@ -176,6 +176,13 @@ async function run() {
             const result = await restaurantsCollection.findOne(query);
             res.send(result);
         });
+
+        app.delete('/restaurant/:email', async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email };
+            const result = await restaurantsCollection.deleteOne(filter);
+            res.send(result);
+        })
 
         //------------------ Foods -----------------//
         app.get('/restaurants/:email', async (req, res) => {
@@ -210,6 +217,13 @@ async function run() {
             const result = await foodsCollection.insertOne(food);
             res.send(result);
         });
+
+        app.delete('/foods/:email', async (req, res) => {
+            const email = req.params.email;
+            const filter = { resEmail: email };
+            const result = await foodsCollection.deleteMany(filter);
+            res.send(result);
+        })
 
         //review
         app.get('/reviews', async (req, res) => {
