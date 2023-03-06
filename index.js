@@ -151,7 +151,7 @@ async function run() {
         });
 
         // ------------ Restaurants -------------- //
-        app.post('/restaurant', verifyJWT, async (req, res) => {
+        app.post('/restaurant', async (req, res) => {
             const restaurant = req.body;
             const result = await restaurantsCollection.insertOne(restaurant);
             res.send(result);
